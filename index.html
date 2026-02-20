@@ -1715,31 +1715,54 @@
                 : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
         });
 
-        // Sign in button
-        document.getElementById('loginBtn').addEventListener('click', () => {
+        let isSignUpMode = false;
+        const signupLink = document.getElementById('signupLink');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginFooterText = document.querySelector('.login-footer-text');
+
+        function toggleSignUpMode(e) {
+            if (e) e.preventDefault();
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                loginBtn.textContent = 'Create Account';
+                loginFooterText.innerHTML = 'Already have an account? <a href="#" id="signupLink">Sign in</a>';
+                document.querySelector('.login-subtitle').innerHTML = '<span class="spark">❖</span> CREATE ACCOUNT';
+            } else {
+                loginBtn.textContent = 'Sign in';
+                loginFooterText.innerHTML = 'First time? <a href="#" id="signupLink">Set up</a>';
+                document.querySelector('.login-subtitle').innerHTML = '<span class="spark">❖</span> CONSENSUS ENGINE';
+            }
+            // Re-attach event listener
+            document.getElementById('signupLink').addEventListener('click', toggleSignUpMode);
+        }
+
+        signupLink.addEventListener('click', toggleSignUpMode);
+
+        // Sign in / Create Account button
+        loginBtn.addEventListener('click', () => {
             const email = document.getElementById('loginEmail').value;
             const pw = document.getElementById('loginPassword').value;
             if (!email || !pw) {
-                const btn = document.getElementById('loginBtn');
-                btn.textContent = 'Please fill all fields';
-                btn.style.background = 'rgba(255,90,90,0.3)';
+                loginBtn.textContent = 'Please fill all fields';
+                loginBtn.style.background = 'rgba(255,90,90,0.3)';
                 setTimeout(() => {
-                    btn.textContent = 'Sign in';
-                    btn.style.background = '';
+                    loginBtn.textContent = isSignUpMode ? 'Create Account' : 'Sign in';
+                    loginBtn.style.background = '';
                 }, 2000);
                 return;
             }
-            const btn = document.getElementById('loginBtn');
-            btn.textContent = 'Signing in...';
+            
+            loginBtn.textContent = isSignUpMode ? 'Creating account...' : 'Signing in...';
             setTimeout(() => {
-                btn.textContent = '✓ Welcome!';
-                btn.style.background = 'linear-gradient(135deg, #27c93f, #1fa832)';
+                loginBtn.textContent = isSignUpMode ? '✓ Account Created!' : '✓ Welcome!';
+                loginBtn.style.background = 'linear-gradient(135deg, #27c93f, #1fa832)';
                 setTimeout(() => {
                     closeLogin();
-                    btn.textContent = 'Sign in';
-                    btn.style.background = '';
+                    loginBtn.textContent = isSignUpMode ? 'Create Account' : 'Sign in';
+                    loginBtn.style.background = '';
                     document.getElementById('loginEmail').value = '';
                     document.getElementById('loginPassword').value = '';
+                    if (isSignUpMode) toggleSignUpMode();
                 }, 1500);
             }, 1200);
         });
